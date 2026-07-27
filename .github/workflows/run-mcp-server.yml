@@ -24,16 +24,17 @@ jobs:
         working-directory: mcp-common-server
         run: npm install
 
-      - name: Create .env from secrets
+      - name: Create .env from vars and secrets
         working-directory: mcp-common-server
         run: |
+          $rootPath = "${{ github.workspace }}\mcp-common-server"
           @"
-          PORT=${{ secrets.PORT }}
-          MCP_ROOTS=${{ secrets.MCP_ROOTS }}
-          MCP_READ_ONLY=${{ secrets.MCP_READ_ONLY }}
-          MCP_ALLOW_EXEC=${{ secrets.MCP_ALLOW_EXEC }}
-          MCP_CMD_TIMEOUT=${{ secrets.MCP_CMD_TIMEOUT }}
-          MCP_IGNORE=${{ secrets.MCP_IGNORE }}
+          PORT=${{ vars.PORT }}
+          MCP_ROOTS=$rootPath
+          MCP_READ_ONLY=${{ vars.MCP_READ_ONLY }}
+          MCP_ALLOW_EXEC=${{ vars.MCP_ALLOW_EXEC }}
+          MCP_CMD_TIMEOUT=${{ vars.MCP_CMD_TIMEOUT }}
+          MCP_IGNORE=${{ vars.MCP_IGNORE }}
           EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
           EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
           GH_TOKEN=${{ secrets.GH_TOKEN }}
