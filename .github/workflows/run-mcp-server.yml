@@ -1,0 +1,45 @@
+name: Run MCP Common Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-server:
+    runs-on: windows-latest
+
+    steps:
+      - name: Clone mcp-common-server
+        run: |
+          git clone https://github.com/tamilts124/mcp-common-server.git mcp-common-server
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: mcp-common-server
+        run: npm install
+
+      - name: Create .env from secrets
+        working-directory: mcp-common-server
+        run: |
+          @"
+          PORT=${{ secrets.PORT }}
+          MCP_ROOTS=${{ secrets.MCP_ROOTS }}
+          MCP_READ_ONLY=${{ secrets.MCP_READ_ONLY }}
+          MCP_ALLOW_EXEC=${{ secrets.MCP_ALLOW_EXEC }}
+          MCP_CMD_TIMEOUT=${{ secrets.MCP_CMD_TIMEOUT }}
+          MCP_IGNORE=${{ secrets.MCP_IGNORE }}
+          EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+          EMAIL_APP_PASSWORD=${{ secrets.EMAIL_APP_PASSWORD }}
+          GH_TOKEN=${{ secrets.GH_TOKEN }}
+          "@ | Out-File -FilePath .env -Encoding utf8
+
+      - name: Start MCP Server
+        working-directory: mcp-common-server
+        run: |
+          node .\server-http.js --category=email_database,execution_process,git,write_edit,read_file_system,browser_automation
